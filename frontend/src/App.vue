@@ -98,7 +98,7 @@ const scatterChartData = ref<ScatterChartData>();
 
 const resToScatterChartData = (data: any[]): ScatterChartData => {
   const res = data.map((x: any, index: number) => {
-    return [index, +x.fields.value] as [number, number];
+    return [index, +x.value] as [number, number];
   });
   return res;
 };
@@ -127,7 +127,7 @@ const resToPieChartData = (data: any[]): PieChartData => {
   ];
 
   data.forEach((elem: any) => {
-    const x = elem.fields.value;
+    const x = elem.value;
     if (x >= 20 && x < 22) {
       res[0].value++;
     } else if (x >= 22 && x < 24) {
@@ -145,20 +145,20 @@ const resToPieChartData = (data: any[]): PieChartData => {
 };
 
 const http = Axios.create({
-  baseURL: "http://123.56.250.165:8000/",
+  baseURL: "http://localhost:8000/api/v1",
 });
 const getData = () => {
   http
-    .get("/mariadb")
+    .get("/test")
     .then((res: any) => {
       console.log(res);
       timeList.value = res.data.data.map((x: any) =>
-        new Date(x.fields.time).toLocaleTimeString()
+        new Date(x.timestamp).toLocaleTimeString()
       );
-      valueList.value = res.data.data.map((x: any) => x.fields.value);
+      valueList.value = res.data.data.map((x: any) => x.value);
       lineChartData.value = res.data.data.map((x: any) => [
-        x.fields.time,
-        x.fields.value,
+        x.timestamp,
+        x.value,
       ]);
       pieChartData.value = resToPieChartData(res.data.data);
       scatterChartData.value = resToScatterChartData(res.data.data);
