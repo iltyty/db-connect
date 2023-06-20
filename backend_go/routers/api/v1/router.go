@@ -5,8 +5,6 @@ import (
 	"github.com/iltyty/db_connect/backend_go/middlewares"
 )
 
-var jwt = middlewares.JWTMiddleware
-
 func Init() *gin.Engine {
 	r := gin.Default()
 	r.Use(middlewares.CorsMiddleware())
@@ -23,9 +21,10 @@ func Init() *gin.Engine {
 
 func registerAuthRouter(rootRouter *gin.RouterGroup) {
 	r := rootRouter.Group("auth")
-	r.POST("/login", jwt.LoginHandler)
-	r.GET("/refresh_token", jwt.RefreshHandler)
-	r.POST("/logout", jwt.MiddlewareFunc(), jwt.LogoutHandler)
+	r.POST("login", LoginHandler)
+	r.GET("refresh_token", RefreshHandler)
+	r.POST("logout", jwt.MiddlewareFunc(), LogoutHandler)
+	r.POST("reset_password", ResetPasswordHandler)
 }
 
 func registerDataRouter(rootRouter *gin.RouterGroup) {

@@ -46,7 +46,7 @@ func GetUser(email string) (APIUser, error) {
 
 func AuthenticateUser(email, password string) bool {
 	var user User
-	res := db.Where("email = ?", email).Find(&user)
+	res := db.Where("email = ?", email).First(&user)
 	if res.Error != nil {
 		return false
 	}
