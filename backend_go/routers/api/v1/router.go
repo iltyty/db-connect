@@ -3,32 +3,37 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/iltyty/db_connect/backend_go/middlewares"
-	"github.com/iltyty/db_connect/backend_go/response"
-	"github.com/iltyty/db_connect/backend_go/services"
-	"net/http"
 )
+
+var jwt = middlewares.JWTMiddleware
 
 func Init() *gin.Engine {
 	r := gin.Default()
-	r.Use(middlewares.Cors())
+	r.Use(middlewares.CorsMiddleware())
+	r.Use(middlewares.ValidatorMiddleware())
 
 	rootRouter := r.Group("api/v1")
+	registerAuthRouter(rootRouter)
 	registerDataRouter(rootRouter)
+	registerUserRouter(rootRouter)
 
 	_ = r.Run("localhost:8000")
 	return r
 }
 
+func registerAuthRouter(rootRouter *gin.RouterGroup) {
+	r := rootRouter.Group("auth")
+	r.POST("/login", jwt.LoginHandler)
+	r.GET("/refresh_token", jwt.RefreshHandler)
+	r.POST("/logout", jwt.MiddlewareFunc(), jwt.LogoutHandler)
+}
+
 func registerDataRouter(rootRouter *gin.RouterGroup) {
 	r := rootRouter.Group("test")
-	r.GET(
-		"", func(c *gin.Context) {
-			resp := response.Ctx{C: c}
-			data, err := services.GetTestData()
-			if err != nil {
-				resp.Resp(http.StatusOK, 1, "get data failed", nil)
-			}
-			resp.Resp(http.StatusOK, 0, "get data success", data)
-		},
-	)
+	r.GET("", jwt.MiddlewareFunc(), GetTestDataHandler)
+}
+
+func registerUserRouter(rootRouter *gin.RouterGroup) {
+	r := rootRouter.Group("users")
+	r.POST("", RegisterUserHandler)
 }

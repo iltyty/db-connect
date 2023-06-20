@@ -23,4 +23,6 @@ func Init() {
 
 	err = db.AutoMigrate(&Test{})
 	utils.CheckError(err)
+	err = db.AutoMigrate(&User{})
+	utils.CheckError(err)
 }
