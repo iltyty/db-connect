@@ -12,10 +12,10 @@ import (
 )
 
 const expireTime = 5 * 60 // expires after 5 minutes
-var jwt = middlewares.JWTMiddleware
-var LoginHandler = jwt.LoginHandler
-var RefreshHandler = jwt.RefreshHandler
-var LogoutHandler = jwt.LogoutHandler
+var jwtMD = middlewares.JWTMiddleware
+var LoginHandler = jwtMD.LoginHandler
+var RefreshHandler = jwtMD.RefreshHandler
+var LogoutHandler = jwtMD.LogoutHandler
 
 func SendEmailCodeHandler(c *gin.Context) {
 	resp := response.Ctx{C: c}
@@ -80,7 +80,7 @@ func ResetPasswordHandler(c *gin.Context) {
 
 func CheckTokenHandler(c *gin.Context) {
 	resp := response.Ctx{C: c}
-	_, err := jwt.CheckIfTokenExpire(c)
+	_, err := jwtMD.CheckIfTokenExpire(c)
 	if err != nil {
 		resp.Resp(http.StatusOK, 1, "token invalid", nil)
 		return

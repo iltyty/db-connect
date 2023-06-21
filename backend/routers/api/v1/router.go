@@ -22,7 +22,7 @@ func Init() *gin.Engine {
 func registerAuthRouter(rootRouter *gin.RouterGroup) {
 	r := rootRouter.Group("auth")
 	r.POST("login", LoginHandler)
-	r.POST("logout", jwt.MiddlewareFunc(), LogoutHandler)
+	r.POST("logout", jwtMD.MiddlewareFunc(), LogoutHandler)
 	r.GET("check", CheckTokenHandler)
 	r.GET("refresh_token", RefreshHandler)
 	r.POST("reset_password", ResetPasswordHandler)
@@ -31,10 +31,11 @@ func registerAuthRouter(rootRouter *gin.RouterGroup) {
 
 func registerDataRouter(rootRouter *gin.RouterGroup) {
 	r := rootRouter.Group("test")
-	r.GET("", jwt.MiddlewareFunc(), GetTestDataHandler)
+	r.GET("", jwtMD.MiddlewareFunc(), GetTestDataHandler)
 }
 
 func registerUserRouter(rootRouter *gin.RouterGroup) {
-	r := rootRouter.Group("users")
+	r := rootRouter.Group("user")
 	r.POST("", RegisterUserHandler)
+	r.GET("", jwtMD.MiddlewareFunc(), GetUserHandler)
 }

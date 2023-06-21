@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const identityKey = "email"
+const IdentityKey = "email"
 
 var Day = 24 * time.Hour
 var JWTMiddleware *jwt.GinJWTMiddleware
@@ -19,19 +19,20 @@ func init() {
 	var err error
 	JWTMiddleware, err = jwt.New(
 		&jwt.GinJWTMiddleware{
-			Realm:         "test zone",
-			Key:           []byte("secret key"),
-			Timeout:       15 * Day,
-			MaxRefresh:    30 * Day,
-			Authenticator: authenticator,
-			PayloadFunc:   payloadFunc,
-			Unauthorized:  unauthorizedFunc,
-			LoginResponse: loginResponse,
-			TokenLookup:   "header: Authorization, query: token, cookie: jwt",
-			TokenHeadName: "token",
-			SendCookie:    true,
-			CookieDomain:  "127.0.0.1",
-			CookieName:    "jwt",
+			Realm:           "test zone",
+			Key:             []byte("secret key"),
+			Timeout:         15 * Day,
+			MaxRefresh:      30 * Day,
+			IdentityKey:     IdentityKey,
+			IdentityHandler: identityHandler,
+			Authenticator:   authenticator,
+			PayloadFunc:     payloadFunc,
+			Unauthorized:    unauthorizedFunc,
+			LoginResponse:   loginResponse,
+			TokenLookup:     "header: Authorization, query: token, cookie: jwt",
+			TokenHeadName:   "token",
+			SendCookie:      true,
+			CookieName:      "jwt",
 		},
 	)
 	utils.CheckError(err)
@@ -53,20 +54,20 @@ func authenticator(c *gin.Context) (interface{}, error) {
 	return &user, err
 }
 
-func payloadFunc(data interface{}) jwt.MapClaims {
-	if v, ok := data.(*models.APIUser); ok {
-		return jwt.MapClaims{
-			identityKey: v.Email,
-		}
-	}
-	return jwt.MapClaims{}
-}
-
 func identityHandler(c *gin.Context) interface{} {
 	claims := jwt.ExtractClaims(c)
 	return &models.APIUser{
-		Email: claims[identityKey].(string),
+		Email: claims[IdentityKey].(string),
 	}
+}
+
+func payloadFunc(data interface{}) jwt.MapClaims {
+	if v, ok := data.(*models.APIUser); ok {
+		return jwt.MapClaims{
+			IdentityKey: v.Email,
+		}
+	}
+	return jwt.MapClaims{}
 }
 
 func unauthorizedFunc(c *gin.Context, code int, message string) {

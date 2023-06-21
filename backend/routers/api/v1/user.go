@@ -1,6 +1,7 @@
 package v1
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/iltyty/db_connect/backend_go/dtos"
@@ -8,6 +9,8 @@ import (
 	"github.com/iltyty/db_connect/backend_go/services"
 	"net/http"
 )
+
+const identityKey = "email"
 
 func RegisterUserHandler(c *gin.Context) {
 	resp := response.Ctx{C: c}
@@ -34,4 +37,15 @@ func RegisterUserHandler(c *gin.Context) {
 		return
 	}
 	resp.Resp(http.StatusOK, 0, "register success", user)
+}
+
+func GetUserHandler(c *gin.Context) {
+	resp := response.Ctx{C: c}
+
+	claims := jwt.ExtractClaims(c)
+	if email, ok := claims[identityKey]; ok {
+		resp.Resp(http.StatusOK, 0, "get user success", email)
+		return
+	}
+	resp.Resp(http.StatusOK, 1, "get user failed", nil)
 }

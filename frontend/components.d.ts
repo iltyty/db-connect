@@ -7,10 +7,13 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    NAvatar: typeof import('naive-ui')['NAvatar']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NCheckbox: typeof import('naive-ui')['NCheckbox']
     NDialogProvider: typeof import('naive-ui')['NDialogProvider']
+    NDropdown: typeof import('naive-ui')['NDropdown']
+    NDropDown: typeof import('naive-ui')['NDropDown']
     NForm: typeof import('naive-ui')['NForm']
     NFormGroup: typeof import('naive-ui')['NFormGroup']
     NFormItem: typeof import('naive-ui')['NFormItem']

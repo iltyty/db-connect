@@ -14,6 +14,20 @@
     <n-gi>
       <div class="title-div">
         <h1 style="display: inline">MariaDB Connect APP</h1>
+        <n-dropdown
+          trigger="hover"
+          :options="avatarOptions"
+          @select="avatarSelect"
+        >
+          <div class="avatar">
+            <n-avatar round size="large">
+              {{ email }}
+              <template #icon>
+                <UserOutlined />
+              </template>
+            </n-avatar>
+          </div>
+        </n-dropdown>
       </div>
     </n-gi>
   </n-grid>
@@ -61,6 +75,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { use } from 'echarts/core'
+import { UserOutlined } from '@vicons/antd'
 import { SVGRenderer } from 'echarts/renderers'
 import { PieChart, ScatterChart, LineChart, BarChart } from 'echarts/charts'
 import {
@@ -71,8 +86,8 @@ import {
 } from 'echarts/components'
 import VChart from 'vue-echarts'
 import { useMessage } from 'naive-ui'
-import { checkAuth } from '@/api/auth'
-import { getTestData } from '@/api/home'
+import { logout, checkAuth } from '@/api/auth'
+import { getUserEmail, getTestData } from '@/api/home'
 
 use([
   SVGRenderer,
@@ -88,13 +103,13 @@ use([
 
 onMounted(async () => {
   const res = await checkAuth()
-  console.log(res)
   if (!res) {
     router.push({
       path: '/login',
     })
     return
   }
+  getEmail()
   getData()
 })
 
@@ -157,6 +172,40 @@ const resToPieChartData = (data: any[]): PieChartData => {
 
 const message = useMessage()
 const router = useRouter()
+
+const avatarOptions = [
+  {
+    key: 0,
+    label: 'logout',
+    show: true,
+  },
+]
+const avatarSelect = (key: Number) => {
+  switch (key) {
+    case 0:
+      logout()
+      message.success('logout success')
+      router.push({
+        path: '/login',
+      })
+      break
+  }
+}
+
+const email = ref<String>('')
+const getEmail = () => {
+  getUserEmail()
+    .then((res: any) => {
+      if (res.code != 0) {
+        message.error(res.msg)
+        return
+      }
+      email.value = String(res.data).substring(0, 5)
+    })
+    .catch((err: Error) => {
+      message.error(err.message)
+    })
+}
 
 const getData = () => {
   getTestData()
@@ -278,7 +327,15 @@ const optionScatter = ref<any>({
 .title-div {
   display: flex;
   align-content: center;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-around;
+
+  .avatar {
+    display: flex;
+    align-items: center;
+    margin-left: 50px;
+    height: 48px;
+  }
 }
 .logo {
   height: 6em;

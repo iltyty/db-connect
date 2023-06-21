@@ -7,7 +7,7 @@ const authStore = useAuthStore()
 export async function register(dto: UserRegistrationDTO) {
   try {
     const res = await http.request({
-      url: 'users',
+      url: 'user',
       method: 'post',
       data: dto,
     })
@@ -29,6 +29,10 @@ export async function login(dto: UserLoginDTO) {
   }
 }
 
+export function logout() {
+  authStore.set('')
+}
+
 export async function checkAuth() {
   if (authStore.jwt == '') {
     return false
@@ -41,7 +45,6 @@ export async function checkAuth() {
         headers: authStore.getTokenHeader(),
       })
       .then((res: any) => {
-        console.log(res)
         return res.code === 0
       })
       .catch(() => {
