@@ -88,6 +88,7 @@ use([
 
 onMounted(async () => {
   const res = await checkAuth()
+  console.log(res)
   if (!res) {
     router.push({
       path: '/login',

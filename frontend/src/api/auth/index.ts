@@ -34,14 +34,15 @@ export async function checkAuth() {
     return false
   }
   try {
-    await http
+    return await http
       .request({
         url: '/auth/check',
         method: 'get',
         headers: authStore.getTokenHeader(),
       })
       .then((res: any) => {
-        return res.code == 0
+        console.log(res)
+        return res.code === 0
       })
       .catch(() => {
         return false
