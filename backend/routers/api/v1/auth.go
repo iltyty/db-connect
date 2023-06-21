@@ -72,7 +72,7 @@ func ResetPasswordHandler(c *gin.Context) {
 
 	err = services.ResetPassword(dto)
 	if err != nil {
-		resp.Resp(http.StatusInternalServerError, 1, err.Error(), nil)
+		resp.Resp(http.StatusBadRequest, 1, err.Error(), nil)
 		return
 	}
 	resp.Resp(http.StatusOK, 0, "reset password success", nil)

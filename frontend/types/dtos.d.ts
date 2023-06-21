@@ -8,3 +8,9 @@ export interface UserLoginDTO {
   email: string
   password: string
 }
+
+export interface AuthResetPasswordDTO {
+  email: string
+  oldPassword: string
+  newPassword: string
+}

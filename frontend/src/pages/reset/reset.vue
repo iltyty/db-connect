@@ -83,6 +83,8 @@
 import { reactive, ref } from 'vue'
 import { FormRules, useMessage } from 'naive-ui'
 import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
+import { resetPassword } from '@/api/auth'
+import { useRouter } from 'vue-router'
 
 const formRef = ref()
 const loading = ref(false)
@@ -116,12 +118,29 @@ const rules: FormRules = {
   },
 }
 
+const router = useRouter()
 const handleSubmit = (e: any) => {
   e.preventDefault()
   formRef.value.validate(async (errors: any) => {
     if (errors) {
       message.error('Form format is problematic, please review')
+      return
     }
+
+    resetPassword(formValue)
+      .then((res: any) => {
+        if (res.code != 0) {
+          message.error(res.msg)
+          return
+        }
+        message.success('password reset success')
+        router.push({
+          path: '/login',
+        })
+      })
+      .catch((err: Error) => {
+        message.error(err.message)
+      })
   })
 }
 </script>

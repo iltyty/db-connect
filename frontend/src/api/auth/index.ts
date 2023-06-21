@@ -1,5 +1,5 @@
 import { http } from '@/utils/axios'
-import { UserLoginDTO, UserRegistrationDTO } from '#/dtos'
+import { AuthResetPasswordDTO, UserLoginDTO, UserRegistrationDTO } from '#/dtos'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -52,5 +52,21 @@ export async function checkAuth() {
       })
   } catch (err) {
     return false
+  }
+}
+
+export async function resetPassword(dto: AuthResetPasswordDTO) {
+  try {
+    return await http.request({
+      url: 'auth/reset_password',
+      method: 'post',
+      data: {
+        email: dto.email,
+        old_password: dto.oldPassword,
+        new_password: dto.newPassword,
+      },
+    })
+  } catch (err) {
+    throw err
   }
 }
