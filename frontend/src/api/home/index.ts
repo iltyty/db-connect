@@ -5,7 +5,6 @@ const authStore = useAuthStore()
 
 export async function getTestData() {
   try {
-    console.log(authStore.jwt)
     const res = await http.request({
       url: '/test',
       headers: authStore.getTokenHeader(),

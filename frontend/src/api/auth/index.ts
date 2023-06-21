@@ -1,5 +1,8 @@
 import { http } from '@/utils/axios'
 import { UserLoginDTO, UserRegistrationDTO } from '#/dtos'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 export async function register(dto: UserRegistrationDTO) {
   try {
@@ -23,5 +26,27 @@ export async function login(dto: UserLoginDTO) {
     })
   } catch (err) {
     throw err
+  }
+}
+
+export async function checkAuth() {
+  if (authStore.jwt == '') {
+    return false
+  }
+  try {
+    await http
+      .request({
+        url: '/auth/check',
+        method: 'get',
+        headers: authStore.getTokenHeader(),
+      })
+      .then((res: any) => {
+        return res.code == 0
+      })
+      .catch(() => {
+        return false
+      })
+  } catch (err) {
+    return false
   }
 }

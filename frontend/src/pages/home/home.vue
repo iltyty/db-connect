@@ -59,6 +59,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import { PieChart, ScatterChart, LineChart, BarChart } from 'echarts/charts'
@@ -69,9 +70,9 @@ import {
   TooltipComponent,
 } from 'echarts/components'
 import VChart from 'vue-echarts'
-import { getTestData } from '@/api/home'
 import { useMessage } from 'naive-ui'
-// import { useRouter } from 'vue-router'
+import { checkAuth } from '@/api/auth'
+import { getTestData } from '@/api/home'
 
 use([
   SVGRenderer,
@@ -85,7 +86,14 @@ use([
   TooltipComponent,
 ])
 
-onMounted(() => {
+onMounted(async () => {
+  const res = await checkAuth()
+  if (!res) {
+    router.push({
+      path: '/login',
+    })
+    return
+  }
   getData()
 })
 
@@ -147,16 +155,13 @@ const resToPieChartData = (data: any[]): PieChartData => {
 }
 
 const message = useMessage()
-// const router = useRouter()
+const router = useRouter()
 
 const getData = () => {
   getTestData()
     .then((res: any) => {
       if (res.code != 0) {
-        message.error('please login first')
-        // router.push({
-        //   path: '/',
-        // })
+        message.error(res.msg)
         return
       }
       timeList.value = res.data.map((x: any) =>
