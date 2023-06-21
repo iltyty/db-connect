@@ -22,9 +22,11 @@ func Init() *gin.Engine {
 func registerAuthRouter(rootRouter *gin.RouterGroup) {
 	r := rootRouter.Group("auth")
 	r.POST("login", LoginHandler)
-	r.GET("refresh_token", RefreshHandler)
 	r.POST("logout", jwt.MiddlewareFunc(), LogoutHandler)
+	r.GET("check", CheckTokenHandler)
+	r.GET("refresh_token", RefreshHandler)
 	r.POST("reset_password", ResetPasswordHandler)
+	r.POST("email_code", SendEmailCodeHandler)
 }
 
 func registerDataRouter(rootRouter *gin.RouterGroup) {

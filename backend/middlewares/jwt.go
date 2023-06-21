@@ -26,9 +26,11 @@ func init() {
 			Authenticator: authenticator,
 			PayloadFunc:   payloadFunc,
 			Unauthorized:  unauthorizedFunc,
+			LoginResponse: loginResponse,
 			TokenLookup:   "header: Authorization, query: token, cookie: jwt",
 			TokenHeadName: "token",
 			SendCookie:    true,
+			CookieDomain:  "127.0.0.1",
 			CookieName:    "jwt",
 		},
 	)
@@ -70,4 +72,14 @@ func identityHandler(c *gin.Context) interface{} {
 func unauthorizedFunc(c *gin.Context, code int, message string) {
 	resp := response.Ctx{C: c}
 	resp.Resp(code, 1, message, nil)
+}
+
+func loginResponse(c *gin.Context, code int, token string, expire time.Time) {
+	resp := response.Ctx{C: c}
+	resp.Resp(
+		code, 0, "login success", gin.H{
+			"token":  token,
+			"expire": expire.Format(time.RFC3339),
+		},
+	)
 }
