@@ -22,6 +22,11 @@ type Database struct {
 	Password string
 }
 
+type Email struct {
+	Username string
+	Password string
+}
+
 type Log struct {
 	Dirname  string
 	Filename string
@@ -30,6 +35,7 @@ type Log struct {
 var (
 	ServerConf   = &Server{}
 	DatabaseConf = &Database{}
+	EmailConf    = &Email{}
 	LogConf      = &Log{}
 )
 
@@ -48,6 +54,8 @@ func Init() {
 	err = viper.UnmarshalKey("server", ServerConf)
 	utils.CheckError(err)
 	err = viper.UnmarshalKey("database", DatabaseConf)
+	utils.CheckError(err)
+	err = viper.UnmarshalKey("email", EmailConf)
 	utils.CheckError(err)
 	err = viper.UnmarshalKey("log", LogConf)
 	utils.CheckError(err)

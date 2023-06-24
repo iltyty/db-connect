@@ -12,3 +12,7 @@ database:
 log:
   dirname: logs
   filename: run.log
+
+email:
+  username: "qiuyh0924@163.com"
+  password: "XQYJLVSHVZGNVJWS"
