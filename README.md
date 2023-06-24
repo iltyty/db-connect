@@ -16,6 +16,31 @@
 
 1. [Install and setup the database.](https://mariadb.com/kb/en/a-mariadb-primer/)
 
+2. Modify the database configuration in ./backend/conf/config.yaml:
+
+   ```yaml
+   server:
+     host: localhost   # leave it be
+     port: 8000        # leave it be
+   
+   database:
+     name: db_connect  # database name
+     host: localhost   # database host
+     port: 3306        # database port
+     username: qiu     # database username
+     password: 123456  # database password
+   
+   log:
+     dirname: logs
+     filename: run.log
+   
+   email:
+     username: "xxx"   # your email username
+     password: "xxx"   # your email SMTP authorization code
+   ```
+
+   
+
 2. Create database `db_connect`:
 
    ```mysql
