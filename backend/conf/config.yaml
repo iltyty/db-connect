@@ -1,0 +1,14 @@
+server:
+  host: localhost
+  port: 8000
+
+database:
+  name: db_connect
+  host: localhost
+  port: 3306
+  username: qiu
+  password: 123456
+
+log:
+  dirname: logs
+  filename: run.log

@@ -1,7 +1,9 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/iltyty/db_connect/backend_go/conf"
 	"github.com/iltyty/db_connect/backend_go/middlewares"
 )
 
@@ -15,7 +17,8 @@ func Init() *gin.Engine {
 	registerDataRouter(rootRouter)
 	registerUserRouter(rootRouter)
 
-	_ = r.Run("localhost:8000")
+	s := conf.ServerConf
+	_ = r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
 	return r
 }
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/iltyty/db_connect/backend_go/conf"
 	"github.com/iltyty/db_connect/backend_go/utils"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,11 +11,12 @@ import (
 var db *gorm.DB
 
 func Init() {
+	c := conf.DatabaseConf
 	// mysql dsn (data source name) format:
 	// { username }:{ password }@tcp({ host }:{ port })/{ dbname }?charset=utf8&parseTime=True&loc=Local
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
-		"qiu", "123456", "localhost", 3306, "db_connect",
+		c.Username, c.Password, c.Host, c.Port, c.Name,
 	)
 
 	var err error
