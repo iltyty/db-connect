@@ -1,17 +1,33 @@
 import { http } from '@/utils/axios'
-import { AuthResetPasswordDTO, UserLoginDTO, UserRegistrationDTO } from '#/dtos'
+import {
+  AuthResetPasswordDTO,
+  UserLoginDTO,
+  UserRegistrationDTO,
+  UserSendEmailDTO,
+} from '#/dtos'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
 
+export async function getCode(dto: UserSendEmailDTO) {
+  try {
+    return await http.request({
+      url: 'auth/email_code',
+      method: 'post',
+      data: dto,
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
 export async function register(dto: UserRegistrationDTO) {
   try {
-    const res = await http.request({
+    return await http.request({
       url: 'user',
       method: 'post',
       data: dto,
     })
-    return res
   } catch (err) {
     throw err
   }

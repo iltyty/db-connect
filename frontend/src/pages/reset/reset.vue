@@ -100,19 +100,19 @@ const rules: FormRules = {
     required: true,
     type: 'email',
     message: 'invalid email',
-    trigger: 'blur',
+    trigger: ['blur', 'input'],
   },
   oldPassword: {
     required: true,
     message: 'password length must be between 6 and 20',
-    trigger: 'blur',
+    trigger: ['blur', 'input'],
     min: 6,
     max: 20,
   },
   newPassword: {
     required: true,
     message: 'password length must be between 6 and 20',
-    trigger: 'blur',
+    trigger: ['blur', 'input'],
     min: 6,
     max: 20,
   },
@@ -123,7 +123,7 @@ const handleSubmit = (e: any) => {
   e.preventDefault()
   formRef.value.validate(async (errors: any) => {
     if (errors) {
-      message.error('Form format is problematic, please review')
+      message.error('form format is problematic, please review')
       return
     }
 

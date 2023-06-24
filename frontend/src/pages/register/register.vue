@@ -12,7 +12,7 @@
           :rules="rules"
           :model="formValue"
         >
-          <n-form-item path="email">
+          <n-form-item path="email" ref="emailRef">
             <n-input v-model:value="formValue.email" placeholder="email">
               <template #prefix>
                 <n-icon size="18" color="#808695">
@@ -44,8 +44,24 @@
                 placeholder="validation code"
               >
               </n-input>
-              <n-button ghost strong type="primary" size="large">
-                Get
+              <n-button
+                ghost
+                strong
+                type="primary"
+                size="large"
+                :disabled="getBtnDisabled"
+                @click="getEmailCode"
+              >
+                {{ getBtnContent }}
+                <div v-show="countdownActive">
+                  <n-countdown
+                    ref="countdownRef"
+                    :duration="60000"
+                    :active="countdownActive"
+                    :render="countdownRender"
+                    :on-finish="countdownFinish"
+                  />
+                </div>
               </n-button>
             </n-input-group>
           </n-form-item>
@@ -57,7 +73,7 @@
               type="primary"
               @click="handleSubmit"
               size="large"
-              :loading="loading"
+              :loading="signupBtnLoading"
             >
               Sign up
             </n-button>
@@ -70,11 +86,14 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import { useMessage, FormRules } from 'naive-ui'
+import { useMessage, FormRules, CountdownProps } from 'naive-ui'
 import { login, register } from '@/api/auth'
 import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { Result } from '@/utils/axios/types'
+import { computed } from 'vue'
+import { getCode } from '@/api/auth'
 
 interface FormParams {
   code: string
@@ -83,7 +102,26 @@ interface FormParams {
 }
 
 const formRef = ref()
-const loading = ref<boolean>(false)
+const emailRef = ref()
+const countdownRef = ref()
+
+const getBtnContent = computed(() => {
+  return countdownActive.value ? '' : 'Get'
+})
+const getBtnDisabled = ref(false)
+
+const countdownActive = ref(false)
+const countdownRender: CountdownProps['render'] = ({ minutes, seconds }) => {
+  const sec = minutes === 1 ? '60' : seconds
+  return `resent after ${sec}s`
+}
+const countdownFinish = () => {
+  countdownRef.value.reset()
+  getBtnDisabled.value = false
+  countdownActive.value = false
+}
+const signupBtnLoading = ref(false)
+
 const message = useMessage()
 const formValue = reactive({
   email: '',
@@ -99,32 +137,55 @@ const rules: FormRules = {
     required: true,
     type: 'email',
     message: 'invalid email',
-    trigger: 'blur',
+    trigger: ['blur', 'input'],
   },
   password: {
     required: true,
     message: 'password length must be between 6 and 20',
-    trigger: 'blur',
+    trigger: ['blur', 'input'],
     min: 6,
     max: 20,
   },
   code: {
     required: false,
     message: 'code length must be 6',
-    trigger: 'blur',
-    // len: 6,
+    trigger: ['blur', 'input'],
+    len: 6,
   },
 }
 
-const handleSubmit = (e: any) => {
+const getEmailCode = async () => {
+  try {
+    await emailRef.value?.validate()
+  } catch (err: any) {
+    console.log(err)
+    return
+  }
+
+  getBtnDisabled.value = true
+  countdownActive.value = true
+
+  try {
+    const res = (await getCode(formValue)) as Result
+    if (res.code != 0) {
+      message.error(res.msg)
+      return
+    }
+    message.success('email sent success')
+  } catch (err: any) {
+    message.error((err as Error).message)
+  }
+}
+
+const handleSubmit = async (e: any) => {
   e.preventDefault()
   formRef.value.validate(async (errors: any) => {
     if (errors) {
-      message.error('Form format is problematic, please review')
+      message.error('form format is problematic, please review')
       return
     }
     const { email, password, code } = formValue
-    loading.value = true
+    signupBtnLoading.value = true
 
     const params: FormParams = {
       email,
@@ -132,34 +193,29 @@ const handleSubmit = (e: any) => {
       code,
     }
 
-    register(params)
-      .then((res: any) => {
-        if (res.code != 0) {
-          message.error(res.msg)
-          return
-        }
-        message.success('sign up success')
-        login(params)
-          .then((res: any) => {
-            if (res.code != 0) {
-              message.error('login failed: ', res.msg)
-              return
-            }
-            authStore.set(res.data.token)
-            router.push({
-              path: '/home',
-            })
-          })
-          .catch((err: any) => {
-            message.error(err)
-          })
+    try {
+      let res = (await register(params)) as Result
+      if (res.code != 0) {
+        message.error(res.msg)
+        return
+      }
+      message.success('sign up success')
+
+      res = (await login(params)) as Result
+      if (res.code != 0) {
+        message.error('login failed: ' + res.msg)
+        return
+      }
+
+      authStore.set(res.data.token)
+      router.push({
+        path: '/home',
       })
-      .catch((err: Error) => {
-        message.error(err.message)
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    } catch (err: any) {
+      message.error((err as Error).message)
+    } finally {
+      signupBtnLoading.value = false
+    }
   })
 }
 </script>

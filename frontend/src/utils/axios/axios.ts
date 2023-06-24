@@ -23,15 +23,7 @@ export class TsQualityAxios {
         if (err.response) {
           return err.response
         }
-        let message = ''
-        if (err && err.response) {
-          // TODO: handle according to the response status
-          switch (err.response.status) {
-            default:
-              message = 'error'
-          }
-        }
-        return Promise.reject(message)
+        return Promise.reject(err)
       }
     )
   }

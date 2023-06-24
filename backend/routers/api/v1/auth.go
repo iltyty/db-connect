@@ -48,7 +48,7 @@ func SendEmailCodeHandler(c *gin.Context) {
 		resp.Resp(http.StatusInternalServerError, 1, err.Error(), nil)
 		return
 	}
-	resp.Resp(http.StatusOK, 0, "send email success", code)
+	resp.Resp(http.StatusOK, 0, "send email success", nil)
 }
 
 func ResetPasswordHandler(c *gin.Context) {
